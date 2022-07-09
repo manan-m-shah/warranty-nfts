@@ -1,84 +1,31 @@
 import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
+import { useContext, useState } from 'react'
+import { ActionKind, AppContext } from '../context/AppProvider';
+
+const styles = {
+  sideImage: 'w-[85px] h-[85px] card-pop-out-small p-1',
+}
+
+const sideImages = ["https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iUwN8quXAZ88/v1/800x-1.jpg", "https://pbs.twimg.com/tweet_video_thumb/E-N4OO3WYAkryVz.jpg", "https://cdn.dribbble.com/users/508142/screenshots/15397516/media/3b2ca2e15104af8d2c6f65362c9f8a76.jpg?compress=1&resize=840x630&vertical=top", "https://cdn.dribbble.com/users/1004796/screenshots/3164869/media/1ec7e3163df7f28dddeb9b164b21ed8a.jpg?compress=1&resize=320x240&vertical=top", "https://cdn.dribbble.com/users/1853242/screenshots/15532235/media/282c1a1348743b3b8e6641d4493713e1.png?compress=1&resize=320x240&vertical=top"]
 
 const Home: NextPage = () => {
+  const { state, dispatch } = useContext(AppContext);
+  const [activeImage, setActiveImage] = useState(0);
+  
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-2">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
-        <h1 className="text-6xl font-bold">
-          Welcome to{' '}
-          <a className="text-blue-600" href="https://nextjs.org">
-            Next.js!
-          </a>
-        </h1>
-
-        <p className="mt-3 text-2xl">
-          Get started by editing{' '}
-          <code className="rounded-md bg-gray-100 p-3 font-mono text-lg">
-            pages/index.tsx
-          </code>
-        </p>
-
-        <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
-          <a
-            href="https://nextjs.org/docs"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and its API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Learn &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Learn about Next.js in an interactive course with quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Examples &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Discover and deploy boilerplate example Next.js projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Deploy &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+    <div className='grid grid-cols-2 h-full w-full'>
+      <div className='flex justify-center mt-16'>
+        <div className='px-4'>
+          <img src={sideImages[activeImage]} alt='' className='w-[500px] h-[400px] card-pop-out-big p-1' />
         </div>
-      </main>
-
-      <footer className="flex h-24 w-full items-center justify-center border-t">
-        <a
-          className="flex items-center justify-center gap-2"
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-        </a>
-      </footer>
+        <div className='flex flex-col gap-y-4 px-4'>
+          {
+            sideImages.map((image, i) => {
+              return <img src={image} alt='' className={styles.sideImage} onClick={()=>{setActiveImage(i)}}/>;
+            })
+          }
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.bg-color-base {
+  background: #dddddd;
+}
+
+.card-pop-out-big {
+  border-radius: 10px;
+  background: #f0f0f3;
+  box-shadow:  8px 8px 16px #bebec0,
+               -8px -8px 16px #ffffff;
+}
+
+.card-pop-out-small {
+  border-radius: 12px;
+  background: #f0f0f3;
+  box-shadow:  6px 6px 12px #cccccf,
+               -6px -6px 12px #ffffff;
+}
