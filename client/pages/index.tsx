@@ -8,12 +8,17 @@ const styles = {
 
 const sideImages = ["https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iUwN8quXAZ88/v1/800x-1.jpg", "https://pbs.twimg.com/tweet_video_thumb/E-N4OO3WYAkryVz.jpg", "https://cdn.dribbble.com/users/508142/screenshots/15397516/media/3b2ca2e15104af8d2c6f65362c9f8a76.jpg?compress=1&resize=840x630&vertical=top", "https://cdn.dribbble.com/users/1004796/screenshots/3164869/media/1ec7e3163df7f28dddeb9b164b21ed8a.jpg?compress=1&resize=320x240&vertical=top", "https://cdn.dribbble.com/users/1853242/screenshots/15532235/media/282c1a1348743b3b8e6641d4493713e1.png?compress=1&resize=320x240&vertical=top"]
 
-const tabButtons = ["Details", "Warranty", "Loyalty"]
-
 const Home: NextPage = () => {
   const { state, dispatch } = useContext(AppContext);
   const [activeImage, setActiveImage] = useState(0);
   const [activeButton, setActiveButton] = useState(0);
+
+
+  const tabButtons = [
+    { text: "Details", style: "text-blue-500", selectedStyle: "text-blue-500 bg-blue-200 -shadow-md" },
+    { text: "Warranty", style: "text-orange-500", selectedStyle: "text-orange-500 bg-orange-200 -shadow-md" },
+    { text: "Loyalty", style: "text-rose-500", selectedStyle: "text-rose-500 bg-rose-200 -shadow-md" },
+  ]
 
   return (
     <div className='grid grid-cols-2 h-full w-full'>
@@ -35,14 +40,23 @@ const Home: NextPage = () => {
         </div>
       </div>
       <div className='flex flex-col items-center mt-16 bg-gray-300 px-8'>
-        <div className='card-pop-in flex justify-between items-center w-full p-1'>
+        <div className='card-pop-in flex justify-between items-center w-full p-1 px-2'>
           {tabButtons.map((button, i) => {
             return (
-              <button
-                className={'px-16 text-gray-600 w-full h-full ' + (i===activeButton ? 'text-blue-600 p-3 button-pop-out-2' : '')}
-                onClick={()=>setActiveButton(i)}>
-                  {button}
-              </button>
+              <div className='w-full'>
+                <button
+                  className={button.style + ' flex justify-center w-full h-full py-3 ' +
+                    (i === activeButton ?
+                      ('button-pop-out-2 scale-105 ease-in duration-300') :
+                      '') + " " +
+                    (i === activeButton ? (button.selectedStyle) : '')
+                  }
+                  onClick={() => {
+                    setActiveButton(i);
+                  }}>
+                  {button.text}
+                </button>
+              </div>
             )
           })}
         </div>
