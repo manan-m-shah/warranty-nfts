@@ -16,7 +16,7 @@ const Loyalty = (props: Props) => {
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
       </h1>
       <div>
-        <div className='grid grid-cols-2 w-full my-8'>
+        <div className='grid grid-cols-2 w-full'>
           <h1 className='text-gray-700 text-xl'>Item</h1>
           <h1 className='text-gray-700 text-xl'>Discount</h1>
         </div>
