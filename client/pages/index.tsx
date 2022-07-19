@@ -17,7 +17,7 @@ const tabButtons: AddItemTabButton[] = [
 
   { text: 'Warranty', style: 'text-orange-500', selectedStyle: 'font-semibold text-orange-700 bg-orange-200 -shadow-md ease-in duration-300', selectedAltStyle: 'outline-orange-300 caret-orange-500  accent-orange-300 text-orange-400' },
 
-  { text: 'Discounts', style: 'text-rose-500', selectedStyle: 'font-semibold text-rose-700 bg-rose-200 -shadow-md ease-in duration-300', selectedAltStyle: 'outline-rose-300 caret-rose-500 accent-rose-300 text-rose-400' },
+  { text: 'Loyalties', style: 'text-rose-500', selectedStyle: 'font-semibold text-rose-700 bg-rose-200 -shadow-md ease-in duration-300', selectedAltStyle: 'outline-rose-300 caret-rose-500 accent-rose-300 text-rose-400' },
 ]
 
 // * image url
