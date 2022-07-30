@@ -1,13 +1,18 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { AppContext } from '../context/AppProvider';
+import { returnShortAddress } from '../utils/functions';
+import { connectToMetamask } from '../utils/user';
 
 const Navbar = () => {
+  const { state, dispatch } = useContext(AppContext);
+
   return (
-    <div className='grid p-6 bg-color-base h-fit'>
-      
-        <button
-          className='button-pop-in justify-self-end p-3 rounded-lg border-1 border-gray-100'>
-            Connect
-        </button>
+    <div className='relative'>
+      <button
+        className='absolute top-4 right-4 px-8 py-3 rounded-lg bg-gradient-primary text-white'
+        onClick={() => connectToMetamask(dispatch)}>
+        {state.user ? returnShortAddress(state.user) : "Connect"}
+      </button>
     </div>
   )
 }

@@ -3,63 +3,66 @@ import { AddItemTabButton } from '../../types/AddItem'
 import NextButton from './Misc/NextButton';
 
 type Props = {
-  activeButton: AddItemTabButton,
-  setActiveButton: Dispatch<SetStateAction<number>>,
-  warrantyMonths: number,
-  setWarrantyMonths: Dispatch<SetStateAction<number>>,
-  loyaltyMonths: number,
-  setLoyaltyMonths: Dispatch<SetStateAction<number>>,
+  baseWarranty: number,
+  setBaseWarranty: Dispatch<SetStateAction<number>>,
+  loyaltyLimit: number,
+  setLoyaltyLimit: Dispatch<SetStateAction<number>>,
   loyaltyPoints: number,
   setLoyaltyPoints: Dispatch<SetStateAction<number>>,
+  timePeriod: number,
+  setTimePeriod: Dispatch<SetStateAction<number>>,
 }
 
 const Warranty = (props: Props) => {
-  const { activeButton, setActiveButton, warrantyMonths, setWarrantyMonths, loyaltyMonths, setLoyaltyMonths, loyaltyPoints, setLoyaltyPoints } = props;
+  const { baseWarranty, setBaseWarranty, loyaltyLimit, setLoyaltyLimit, loyaltyPoints, setLoyaltyPoints, timePeriod, setTimePeriod } = props;
 
   return (
-    <>
-      <h1 className='text-gray-500 tracking-wide'>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </h1>
+    <div className='flex flex-col gap-y-2 text-gray-500'>
       <div className='flex items-center gap-x-4'>
-        <div className='flex items-center gap-x-2 p-1 w-fit rounded-2xl card-pop-in border-2 border-white'>
+        <div className='flex items-center gap-x-2 p-1 w-fit rounded-2xl card-pop-in border-4 border-white'>
           <button
-            className={'rounded-xl button-pop-out-2 hover:shadow-sm font-bold border-2 border-white px-3 pb-1 text-3xl ' + activeButton.selectedStyle + ' text-gray-700 bg-gray-200'}
-            onClick={() => setWarrantyMonths(oldState => oldState - 1)}
+            className='button-pop-out border-2 border-white px-4 py-3 hover:shadow-md duration-300 ease-in'
+            onClick={(e) => {
+              e.preventDefault()
+              setBaseWarranty(oldState => oldState - 1)
+            }}
           >
             -
           </button>
-          <span className='text-2xl text-center w-8 mx-2 mr-3'>{warrantyMonths}</span>
+          <span className='text-2xl text-center w-8 mx-2 mr-3'>{baseWarranty}</span>
           <button
-            className={'rounded-xl button-pop-out-2 hover:shadow-sm font-bold border-2 border-white px-2 pb-1 text-3xl ' + activeButton.selectedStyle + ' text-orange-400 bg-gray-200'}
-            onClick={() => setWarrantyMonths(oldState => oldState + 1)}
+            className='button-pop-out border-2 border-white px-4 py-3 hover:shadow-md duration-300 ease-in'
+            onClick={(e) => {
+              e.preventDefault()
+              setBaseWarranty(oldState => oldState + 1)
+            }}
           >
             +
           </button>
         </div>
-        <h1 className='text-2xl text-gray-500'>Months</h1>
+        <h1 className='text-xl'>Months</h1>
       </div>
 
       <div className='flex gap-x-6 w-full items-center'>
-        <span className='text-2xl border-2 w-20 card-pop-in text-center border-white py-2 px-4'>{loyaltyMonths}
+        <span className='text-2xl border-4 w-20 card-pop-in text-center border-white py-2 px-4'>{loyaltyLimit}
         </span>
         <div className='flex flex-col w-full'>
           <label htmlFor="loyalty-months"
             className='mb-2 px-4'>
-            Additional Loyalty Warranty
+            Max Additional Loyalty Warranty
           </label>
           <input type="range"
             min={0}
-            max={warrantyMonths}
-            value={loyaltyMonths}
-            onChange={(e) => setLoyaltyMonths(Number(e.target.value))}
-            className='accent-orange-300 rounded-lg w-full'
+            max={baseWarranty}
+            value={loyaltyLimit}
+            onChange={(e) => setLoyaltyLimit(Number(e.target.value))}
+            className='accent-indigo-500 rounded-lg w-full'
           />
         </div>
       </div>
 
       <div className='flex gap-x-6 w-full items-center'>
-        <span className='text-2xl border-2 w-20 card-pop-in text-center border-white py-2 px-4'>{loyaltyPoints}
+        <span className='text-2xl border-4 w-20 card-pop-in text-center border-white py-2 px-4'>{loyaltyPoints}
         </span>
         <div className='flex flex-col w-full'>
           <label htmlFor="loyalty-months"
@@ -71,19 +74,38 @@ const Warranty = (props: Props) => {
             max={10}
             value={loyaltyPoints}
             onChange={(e) => setLoyaltyPoints(Number(e.target.value))}
-            className='accent-orange-300 rounded-lg w-full'
+            className='accent-indigo-500 rounded-lg w-full'
           />
         </div>
       </div>
 
-      <div className='flex items-center justify-start w-full gap-x-8'>
-        <button
-          className='button-pop-out py-3 px-8 border-4 border-white text-gray-600 hover:shadow-sm ease-in duration-300'>
-          Skip For Now
-        </button>
-        <NextButton activeButton={activeButton} setActiveButton={setActiveButton} />
+      <div className='flex items-center gap-x-4'>
+        <div className='flex items-center gap-x-2 p-1 w-fit rounded-2xl card-pop-in border-4 border-white'>
+          <button
+            className='button-pop-out border-2 border-white px-4 py-3 hover:shadow-md duration-300 ease-in'
+            onClick={(e) => {
+              e.preventDefault()
+              setTimePeriod(oldState => oldState - 1)
+            }}
+          >
+            -
+          </button>
+          <span className='text-2xl text-center w-8 mx-2 mr-3'>{timePeriod}</span>
+          <button
+            className='button-pop-out border-2 border-white px-4 py-3 hover:shadow-md duration-300 ease-in'
+            onClick={(e) => {
+              e.preventDefault()
+              setTimePeriod(oldState => oldState + 1)
+            }}
+          >
+            +
+          </button>
+        </div>
+        <h1 className='text-xl'>Loyalty Duration</h1>
       </div>
-    </>
+
+
+    </div>
   )
 }
 

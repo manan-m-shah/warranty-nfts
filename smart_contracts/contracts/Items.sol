@@ -9,8 +9,11 @@ contract Items is Users {
         address merchantAddress;
         string name;
         string description;
+        string imageURI;
         uint32 baseWarranty;
         uint32 loyaltyLimit;
+        uint32 loyaltyPoints;
+        uint32 timePeriod;
         bool soulBound;
     }
 
@@ -21,8 +24,11 @@ contract Items is Users {
     function addItem(
         string memory _name,
         string memory _description,
+        string memory _imageURI,
         uint32 _baseWarranty,
         uint32 _loyaltyLimit,
+        uint32 _loyaltyPoints,
+        uint32 _timePeriod,
         bool _soulBound
     ) public isMerchant {
         require(_notEmpty(_name), "Item name cannot be empty");
@@ -32,29 +38,49 @@ contract Items is Users {
                 merchantAddress: msg.sender,
                 name: _name,
                 description: _description,
+                imageURI: _imageURI,
                 baseWarranty: _baseWarranty,
                 loyaltyLimit: _loyaltyLimit,
+                loyaltyPoints: _loyaltyPoints,
+                timePeriod: _timePeriod,
                 soulBound: _soulBound
             })
         );
     }
 
-    // function to edit item
-    function editItem(
-        uint32 _itemId,
-        string memory _name,
-        string memory _description,
-        uint32 _baseWarranty,
-        uint32 _loyaltyLimit,
-        bool _soulBound
-    ) public isItem(_itemId) onlyMerchant(items[_itemId].merchantAddress) {
-        require(_notEmpty(_name), "Item name cannot be empty");
-        require(_notEmpty(_description), "Item description cannot be empty");
-        items[_itemId].name = _name;
-        items[_itemId].description = _description;
-        items[_itemId].baseWarranty = _baseWarranty;
-        items[_itemId].loyaltyLimit = _loyaltyLimit;
-        items[_itemId].soulBound = _soulBound;
+    // // function to edit item
+    // function editItem(
+    //     uint32 _itemId,
+    //     string memory _name,
+    //     string memory _description,
+    //     string memory _imageURI,
+    //     uint32 _baseWarranty,
+    //     uint32 _loyaltyLimit,
+    //     uint32 _loyaltyPoints,
+    //     uint32 _timePeriod,
+    //     bool _soulBound
+    // ) public isItem(_itemId) onlyMerchant(items[_itemId].merchantAddress) {
+    //     require(_notEmpty(_name), "Item name cannot be empty");
+    //     require(_notEmpty(_description), "Item description cannot be empty");
+    //     items[_itemId].name = _name;
+    //     items[_itemId].description = _description;
+    //     items[_itemId].imageURI = _imageURI;
+    //     items[_itemId].baseWarranty = _baseWarranty;
+    //     items[_itemId].loyaltyLimit = _loyaltyLimit;
+    //     items[_itemId].loyaltyPoints = _loyaltyPoints;
+    //     items[_itemId].timePeriod = _timePeriod;
+    //     items[_itemId].soulBound = _soulBound;
+    // }
+
+    // function to get item
+    function getItem(uint32 _itemId)
+        public
+        view
+        isItem(_itemId)
+        onlyMerchant(items[_itemId].merchantAddress)
+        returns (Item memory item)
+    {
+        return items[_itemId];
     }
 
     // function to sender's items
