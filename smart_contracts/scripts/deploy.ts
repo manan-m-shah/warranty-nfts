@@ -1,12 +1,12 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  const WarrantyNFTs = await ethers.getContractFactory("WarrantyNFTs");
-  const warrantynfts = await WarrantyNFTs.deploy();
+  const WarrantyNFT = await ethers.getContractFactory("WarrantyNFT");
+  const warrantynft = await WarrantyNFT.deploy();
 
-  await warrantynfts.deployed();
+  await warrantynft.deployed();
 
-  console.log("Contract Deployed To:", warrantynfts.address);
+  console.log("Contract Deployed To:", warrantynft.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

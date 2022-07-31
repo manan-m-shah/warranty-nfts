@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 import {Base64} from "./Base64.sol";
 
-contract WarrantyNFTs is ERC721, Items {
+contract WarrantyNFT is ERC721, Items {
     constructor() ERC721("TestWarrantyNFT", "TWNFT") {}
 
     // struct warranty with warranty, loyaltyPoints, purchaseDate, itemId
@@ -36,6 +36,8 @@ contract WarrantyNFTs is ERC721, Items {
     {
         require(_notEmpty(_serialNumber), "Serial number cannot be empty");
         uint256 newTokenId = warranties.length;
+        uint32 calculatedLoyalty = calculateLoyaltyPoints(_to);
+        uint32 newLoyaltyLimit = items[_itemId].loyaltyLimit * calculatedLoyalty;
         warranties.push(
             Warranty({
                 serialNumber: _serialNumber,
@@ -43,11 +45,8 @@ contract WarrantyNFTs is ERC721, Items {
                 itemId: _itemId,
                 purchaseDate: uint32(block.timestamp),
                 warranty: items[_itemId].baseWarranty,
+                loyaltyLimit: newLoyaltyLimit,
                 loyaltyPoints: items[_itemId].loyaltyPoints,
-                loyaltyLimit: uint32(
-                    (items[_itemId].loyaltyLimit *
-                        (calculateLoyaltyPoints(_to) / 10))
-                ),
                 soulBound: items[_itemId].soulBound
             })
         );
@@ -93,7 +92,7 @@ contract WarrantyNFTs is ERC721, Items {
         for (uint i = 0; i < userWarranties.length; i++) {
             loyaltyPoints += userWarranties[i].loyaltyPoints;
         }
-        return loyaltyPoints;
+        return loyaltyPoints/10;
     }
 
     function getMyWarranties() public view returns (Warranty[] memory) {
