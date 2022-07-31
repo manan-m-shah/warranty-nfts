@@ -5,7 +5,6 @@ contract Users {
     //customer struct with name, phone
     struct Customer {
         string name;
-        string phone;
         string email;
     }
     // address => Customer
@@ -19,30 +18,101 @@ contract Users {
     // address => Merchant
     mapping(address => Merchant) private addressToMerchant;
 
-    function addMerchant(string memory _name) public {
-        require(_notEmpty(_name), "Merchant name cannot be empty");
-        Merchant storage newMerchant = addressToMerchant[msg.sender];
-        newMerchant.name = _name;
+    // function to add new merchant
+    function addMerchant(string memory _name, string memory _email) public {
+        require(_notEmpty(_name), "Name cannot be empty");
+        require(_notEmpty(_email), "Email cannot be empty");
+        address newMerchantAddress = msg.sender;
+        addressToMerchant[newMerchantAddress] = Merchant({
+            name: _name,
+            email: _email
+        });
     }
 
-    function editMerchant(string memory _name) public {
-        require(_notEmpty(_name), "Merchant name cannot be empty");
-        Merchant storage newMerchant = addressToMerchant[msg.sender];
-        newMerchant.name = _name;
+    // function to edit merchant
+    function editMerchant(string memory _name, string memory _email) public {
+        require(_notEmpty(_name), "Name cannot be empty");
+        require(_notEmpty(_email), "Email cannot be empty");
+        address newMerchantAddress = msg.sender;
+        addressToMerchant[newMerchantAddress] = Merchant({
+            name: _name,
+            email: _email
+        });
     }
 
+    // function to get merchant
+    function getMerchant(address _merchantAddress)
+        public
+        view
+        returns (Merchant memory)
+    {
+        return addressToMerchant[_merchantAddress];
+    }
+
+    // function to add new customer
+    function addCustomer(string memory _name, string memory _email) public {
+        require(_notEmpty(_name), "Name cannot be empty");
+        require(_notEmpty(_email), "Email cannot be empty");
+        address newCustomerAddress = msg.sender;
+        addressToCustomer[newCustomerAddress] = Customer({
+            name: _name,
+            email: _email
+        });
+    }
+
+    // function to edit customer
+    function editCustomer(string memory _name, string memory _email) public {
+        require(_notEmpty(_name), "Name cannot be empty");
+        require(_notEmpty(_email), "Email cannot be empty");
+        address newCustomerAddress = msg.sender;
+        addressToCustomer[newCustomerAddress] = Customer({
+            name: _name,
+            email: _email
+        });
+    }
+
+    // function to get customer
+    function getCustomer(address _customerAddress)
+        public
+        view
+        returns (Customer memory)
+    {
+        return addressToCustomer[_customerAddress];
+    }
+
+    // function to check if string is empty
     function _notEmpty(string memory value) internal pure returns (bool) {
         return (keccak256(abi.encodePacked((value))) !=
             keccak256(abi.encodePacked("")));
     }
 
-    modifier isMerchant {
-        require(_notEmpty(addressToMerchant[msg.sender].name), "Only Merchants can add items");
+    // modifier to check if the caller is a merchant
+    modifier isMerchant() {
+        require(
+            _notEmpty(addressToMerchant[msg.sender].name),
+            "Only Merchants can add items"
+        );
         _;
     }
 
-    modifier onlyMerchant (address _merchantAddress) {
+    // modifier to check if the caller and the merchant address are same
+    modifier onlyMerchant(address _merchantAddress) {
         require(msg.sender == _merchantAddress, "Different Merchant");
+        _;
+    }
+
+    // modifier to check if the caller is a customer
+    modifier isCustomer() {
+        require(
+            _notEmpty(addressToCustomer[msg.sender].name),
+            "Only Customers can buy items"
+        );
+        _;
+    }
+
+    // modifier to check if the caller and the customer address are same
+    modifier onlyCustomer(address _customerAddress) {
+        require(msg.sender == _customerAddress, "Different Customer");
         _;
     }
 }

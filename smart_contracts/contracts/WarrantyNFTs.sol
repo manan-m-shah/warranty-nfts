@@ -3,13 +3,10 @@ pragma solidity ^0.8.15;
 
 import "./Items.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 import {Base64} from "./Base64.sol";
 
-contract WarrantyNFTs is ERC721, ERC721URIStorage, ERC721Enumerable, Items {
+contract WarrantyNFT is ERC721, Items {
     constructor() ERC721("TestWarrantyNFT", "TWNFT") {}
 
     // struct warranty with warranty, loyaltyPoints, purchaseDate, itemId
@@ -19,6 +16,7 @@ contract WarrantyNFTs is ERC721, ERC721URIStorage, ERC721Enumerable, Items {
         uint32 itemId; // dynamic name and description
         uint32 purchaseDate; // static, purchase date
         uint32 warranty; // static, includes loyalty warranty
+        uint32 loyaltyLimit; // static, includes loyalty limit
         uint32 loyaltyPoints; // static, includes loyalty points
         bool soulBound; // soul bound or not
     }
@@ -27,13 +25,19 @@ contract WarrantyNFTs is ERC721, ERC721URIStorage, ERC721Enumerable, Items {
     Warranty[] private warranties;
 
     // function to add warranty
-    function addWarranty(uint32 _itemId, string memory _serialNumber)
+    function addWarranty(
+        uint32 _itemId,
+        string memory _serialNumber,
+        address _to
+    )
         internal
         onlyMerchant(items[_itemId].merchantAddress)
         returns (uint tokenId)
     {
         require(_notEmpty(_serialNumber), "Serial number cannot be empty");
         uint256 newTokenId = warranties.length;
+        uint32 calculatedLoyalty = calculateLoyaltyPoints(_to);
+        uint32 newLoyaltyLimit = items[_itemId].loyaltyLimit * calculatedLoyalty;
         warranties.push(
             Warranty({
                 serialNumber: _serialNumber,
@@ -41,28 +45,95 @@ contract WarrantyNFTs is ERC721, ERC721URIStorage, ERC721Enumerable, Items {
                 itemId: _itemId,
                 purchaseDate: uint32(block.timestamp),
                 warranty: items[_itemId].baseWarranty,
-                loyaltyPoints: items[_itemId].loyaltyLimit,
+                loyaltyLimit: newLoyaltyLimit,
+                loyaltyPoints: items[_itemId].loyaltyPoints,
                 soulBound: items[_itemId].soulBound
             })
         );
         return newTokenId;
     }
 
-    function svgToImageURI(string memory svg)
+    function editWarranty(uint32 _warrantyId, string memory _repairStatus)
         public
-        pure
-        returns (string memory)
     {
-        string memory baseURL = "data:image/svg+xml;base64,";
-        string memory svgBase64Encoded = Base64.encode(bytes(svg));
-        /* 
-      abi.encodePacked is a function provided by Solidity which
-      is used to concatenate two strings, similar to a `concat()`
-      function in JavaScript.
-    */
-        return string(abi.encodePacked(baseURL, svgBase64Encoded));
+        warranties[_warrantyId].repairStatus = _repairStatus;
     }
 
+    function getWarranty(uint tokenId)
+        private
+        view
+        returns (Warranty memory warranty)
+    {
+        return warranties[tokenId];
+    }
+
+    //function to calculate warranty remaining
+    function warrantyRemaining(uint tokenId)
+        public
+        view
+        returns (uint32 remainingTime)
+    {
+        Warranty memory warranty = getWarranty(tokenId);
+        uint32 purchaseDate = warranty.purchaseDate;
+        uint32 warrantyEndDate = purchaseDate +
+            warranty.warranty *
+            30 days +
+            warranty.loyaltyLimit *
+            30 days;
+        uint32 warrantyTimeRemaining = (warrantyEndDate -
+            uint32(block.timestamp)) / 30 days;
+        return warrantyTimeRemaining;
+    }
+
+    //function to calculate loyalty points of all purchased warranties of a user
+    function calculateLoyaltyPoints(address _to) public view returns (uint32) {
+        Warranty[] memory userWarranties = getWarranties(_to);
+        uint32 loyaltyPoints = 0;
+        for (uint i = 0; i < userWarranties.length; i++) {
+            loyaltyPoints += userWarranties[i].loyaltyPoints;
+        }
+        return loyaltyPoints/10;
+    }
+
+    function getMyWarranties() public view returns (Warranty[] memory) {
+        return getWarranties(msg.sender);
+    }
+
+    function getWarranties(address _address)
+        private
+        view
+        returns (Warranty[] memory)
+    {
+        Warranty[] memory result = new Warranty[](balanceOf(_address));
+        uint counter = 0;
+        for (uint i = 0; i < warranties.length; i++) {
+            if (ownerOf(i) == msg.sender) {
+                result[counter] = warranties[i];
+                counter++;
+            }
+        }
+        return result;
+    }
+
+    function getMerchantWarranties() public view returns (Warranty[] memory) {
+        uint counter = 0;
+        for (uint i = 0; i < warranties.length; i++) {
+            if (items[warranties[i].itemId].merchantAddress == msg.sender) {
+                counter++;
+            }
+        }
+        Warranty[] memory result = new Warranty[](counter);
+        counter = 0;
+        for (uint i = 0; i < warranties.length; i++) {
+            if (items[warranties[i].itemId].merchantAddress == msg.sender) {
+                result[counter] = warranties[i];
+                counter++;
+            }
+        }
+        return result;
+    }
+
+    /* 
     function formatTokenURI(string memory imageURI, uint tokenId)
         public
         view
@@ -83,61 +154,20 @@ contract WarrantyNFTs is ERC721, ERC721URIStorage, ERC721Enumerable, Items {
         string memory jsonBase64Encoded = Base64.encode(bytes(json));
         return string(abi.encodePacked(baseURL, jsonBase64Encoded));
     }
-
-    function getWarranty(uint tokenId)
-        public
-        view
-        returns (Warranty memory warranty)
-    {
-        return warranties[tokenId];
-    }
+    */
 
     function safeMint(
         address _to,
         string memory _serialNumber,
-        uint32 _itemId,
-        string memory _svg
-    ) public {
+        uint32 _itemId
+    ) public onlyMerchant(items[_itemId].merchantAddress) {
         /* Encode the SVG to a Base64 string and then generate the tokenURI */
-        uint tokenId = addWarranty(_itemId, _serialNumber);
-        string memory imageURI = svgToImageURI(_svg);
-        string memory tokenURIString = formatTokenURI(imageURI, tokenId);
+        uint tokenId = addWarranty(_itemId, _serialNumber, _to);
+        // string memory tokenURIString = formatTokenURI(
+        //     items[_itemId].imageURI,
+        //     tokenId
+        // );
         _safeMint(_to, tokenId);
-        _setTokenURI(tokenId, tokenURIString);
-    }
-
-    // * The following functions are overrides required by Solidity.
-
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal override(ERC721, ERC721Enumerable) {
-        super._beforeTokenTransfer(from, to, tokenId);
-    }
-
-    function _burn(uint256 tokenId)
-        internal
-        override(ERC721, ERC721URIStorage)
-    {
-        super._burn(tokenId);
-    }
-
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (string memory)
-    {
-        return super.tokenURI(tokenId);
-    }
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721Enumerable)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
+        // _setTokenURI(tokenId, tokenURIString);
     }
 }
